@@ -8,6 +8,9 @@ const express = require('express');
 const server = express();
 const port = 4545;
 
+var MongoClient = require('mongodb').MongoClient;
+var dbLibrary
+
 server.use('/', express.static(__dirname));
 
     // LANCEMENT DU SERVEUR
@@ -29,7 +32,7 @@ server.get('/get', function(req, res) {
     console.log(" req = /get ")
     });
 
-server.get('/post', function(req, res) { //FAIRE LECTURE JSON
+server.post('/post', function(req, res) { //FAIRE LECTURE JSON
     console.log(" req = /post ")
     requestJSON(req, function (error, response, body) {
   if (!error && response.statusCode == 200) {
