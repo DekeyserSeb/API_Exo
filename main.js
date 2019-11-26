@@ -1,34 +1,47 @@
 // INITIALIZATION
 
 const mongo = require('mongodb');
+const filestream = require('fs'); 
+//const requestJSON = require ('request');
 
 const express = require('express');
-const app = express();
+const server = express();
 const port = 4545;
 
-app.use('/', express.static(__dirname));
+server.use('/', express.static(__dirname));
 
-// =======================
+    // LANCEMENT DU SERVEUR
 
-// LANCEMENT DU SERVEUR
+    server.listen(port, () => console.log('Listening'));
 
-app.listen(port, () => console.log('Listening'));
+    // =======================
 
-// =======================
+// CONFIGURATION DES ROUTES (ALL REQUEST COME HERE)
 
-// ALL reqS COME HERE
-app.get('/', function(req, res) {
-    print(" req = / ")
+server.get('/h', function(req, res) {
+    console.log('Connected')
+    res.setHeader('Content-Type', 'text/html') //En-tête de la réponse en HTTP
+    res.status(200).send('<h1>Message reçus avec succès</h1>')
+    console.log(" req = / ")
     });
-app.get('/get', function(req, res) {
-    print(" req = /get ")
+
+server.get('/get', function(req, res) {
+    console.log(" req = /get ")
+    fs.readFile('my-file.txt', 'utf8', function(err, data) {
+        if (err) throw err;
+        console.log(data);
+    })
     });
-app.get('/post', function(req, res) {
-    print(" req = /post ")
+
+server.get('/post', function(req, res) { //FAIRE LECTURE JSON
+    console.log(" req = /post ")
     });
-app.get('/put', function(req, res) {
-    print(" req = /put ")
+
+server.get('/put', function(req, res) {
+    console.log(" req = /put ")
     });
-app.get('/delete', function(req, res) {
-    print(" req = /delete ")
+
+server.get('/delete', function(req, res) {
+    console.log(" req = /delete ")
     });
+
