@@ -28,11 +28,11 @@ server.get('/', function(req, res) {
     console.log(" req = / ")
     });
 
-server.get('/get', function(req, res) {
+server.get('/', function(req, res) {
     console.log(" req = /get ")
     });
 
-server.post('/post', function(req, res) { //FAIRE LECTURE JSON
+server.post('/', function(req, res) { //FAIRE LECTURE JSON
     console.log(" req = /post ")
     requestJSON(req, function (error, response, body) {
   if (!error && response.statusCode == 200) {
@@ -42,7 +42,7 @@ server.post('/post', function(req, res) { //FAIRE LECTURE JSON
 })
     });
 
-server.put('/put', function(req, res) {
+server.put('/', function(req, res) {
     console.log(" req = /put ")
     requestJSON(req, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -52,7 +52,7 @@ server.put('/put', function(req, res) {
       })
     });
 
-server.delete('/delete', function(req, res) {
+server.delete('/', function(req, res) {
     console.log(" req = /delete ")
     requestJSON(req, function (error, response, body) {
         if (!error && response.statusCode == 200) {
