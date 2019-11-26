@@ -1,0 +1,8 @@
+ID : int
+name FR : string
+name JP : string
+Year : int
+author : string
+genres : []
+
+(illustration) A voir
