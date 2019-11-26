@@ -3,8 +3,9 @@
 const mongo = require('mongodb');
 const filestream = require('fs'); 
 const requestJSON = require ('request');
-
+const body_parser = require('body-parser');
 const express = require('express');
+
 const server = express();
 const port = 4545;
 
@@ -21,44 +22,73 @@ server.use('/', express.static(__dirname));
 
 // CONFIGURATION DES ROUTES (ALL REQUEST COME HERE)
 
-server.get('/', function(req, res) {
+server.get('/h', function(req, res) {
     console.log('Connected')
     res.setHeader('Content-Type', 'text/html') //En-tête de la réponse en HTTP
     res.status(200).send('<h1>Message reçus avec succès</h1>')
     console.log(" req = / ")
     });
 
-server.get('/', function(req, res) {
+server.get("/mangas/:ID", function(req, res) {
     console.log(" req = /get ")
+    const mangaID = req.params.ID;
+    const manga = data.find(_manga => _manga.ID === mangaID);
+
+    if (manga) {
+       res.json(manga);
+    } else {
+       res.json({ message: `item ${mangaID} doesn't exist`})
+    }
+
     });
 
-server.post('/', function(req, res) { //FAIRE LECTURE JSON
+server.post("/mangas", function(req, res) { //FAIRE LECTURE JSON
     console.log(" req = /post ")
-    requestJSON(req, function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-     var importedJSON = JSON.parse(body);
-     console.log(importedJSON);
-  }
-})
+    const manga = req.body;
+    console.log('Adding new item: ', manga);
+ 
+    // add new item to array
+    data.push(manga)
+ 
+    // return updated list
+    res.json(data);
+
     });
 
-server.put('/', function(req, res) {
+server.put("/mangas/:ID", function(req, res) {
     console.log(" req = /put ")
-    requestJSON(req, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-           var importedJSON = JSON.parse(body);
-           console.log(importedJSON);
-        }
-      })
+    const mangaID = req.params.id;
+    const manga = req.body;
+    console.log("Editing item: ", mangaID, " to be ", manga);
+ 
+    const updatedListItems = [];
+    // loop through list to find and replace one item
+    data.forEach(oldManga => {
+       if (oldManga.id === mangaID) {
+          updatedListItems.push(manga);
+       } else {
+          updatedListItems.push(oldManga);
+       }
+    });
+ 
+    // replace old list with new one
+    data = updatedListItems;
+ 
+    res.json(data);
     });
 
-server.delete('/', function(req, res) {
+server.delete('/mangas/:id', function(req, res) {
     console.log(" req = /delete ")
-    requestJSON(req, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-           var importedJSON = JSON.parse(body);
-           console.log(importedJSON);
-        }
-      })
+    const mangaID = req.params.id;
+
+    console.log("Delete manga with id: ", mangaID);
+ 
+    // filter list copy, by excluding item to delete
+    const filtered_list = data.filter(manga => manga.id !== mangaID);
+ 
+    // replace old list with new one
+    data = filtered_list;
+ 
+    res.json(data);
     });
 
