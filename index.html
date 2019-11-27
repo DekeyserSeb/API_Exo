@@ -1,0 +1,32 @@
+<html>
+    <body> 
+        <h1>Awsome Form</h1>
+        <h2>Send values !</h2>
+        <form action = "http://127.0.0.1:4545/process_form" method = "GET">
+            ID: <input type = "text" name = "id"><br/>
+            <input type = "submit" value = "READ !">  
+        </form> 
+        <h2>Add values !</h2>
+        <form action = "http://127.0.0.1:4545/process_form" method = "POST">
+            Title FR: <input type = "text" name = "titleFR"><br/>
+            Title JP: <input type = "text" name = "titleJP"><br/>
+            Author: <input type = "text" name = "author"><br/>
+            Year: <input type = "text" name = "year"><br/>
+            <input type = "submit" value = "ADD !">  
+        </form> 
+        <h2>Update values !</h2>
+        <form action = "http://127.0.0.1:4545/process_form" method = "PUT">
+            ID: <input type = "text" name = "id"><br/>
+            Title FR: <input type = "text" name = "titleFR"><br/>
+            Title JP: <input type = "text" name = "titleJP"><br/>
+            Author: <input type = "text" name = "author"><br/>
+            Year: <input type = "text" name = "year"><br/>
+            <input type = "submit" value = "UPDATE !">  
+        </form>
+        <h2>Delete values !</h2>
+        <form action = "http://127.0.0.1:4545/process_form" method = "DELETE">
+            ID: <input type = "text" name = "id"><br/>
+            <input type = "submit" value = "DELETE !">  
+        </form> 
+    </body> 
+</html> 
