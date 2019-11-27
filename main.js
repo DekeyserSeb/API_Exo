@@ -35,11 +35,13 @@ server.get('/h', function (req, res) {
 
 server.get("/mangas", function (req, res) {
     console.log(" req = /get ")
+    console.log("QUERY", req.query);
+    
     const mangaID = req.query.ID;
 
     //Demander un manga a partir de son ID
     var query = {
-        id: mangaID
+        ID: mangaID
     }
 
     MongoClient.connect(url, {
@@ -50,10 +52,11 @@ server.get("/mangas", function (req, res) {
 
             console.log("Connected correctly to server");
             dbLibrary = dbMongo.db("restExo");
-            dbLibrary.collection("MANGAS").findOne((query), function (err, result) {
+            
+             dbLibrary.collection("MANGAS").findOne((query), function (err, result) {
                 manga = result;
             });
-
+ 
             dbMongo.close();
         })
     if (manga) {
@@ -68,7 +71,7 @@ server.get("/mangas", function (req, res) {
 
 server.post("/mangas", function (req, res) {
     console.log(" req = /post ")
-
+    console.log("QUERY", req.query);
     const query = {
         ID: req.query.ID,
         NameFR: req.query.NameFR,
@@ -105,14 +108,16 @@ server.put("/mangas", function (req, res) {
     const mangaID = req.query.ID;
     console.log("Editing item: ", mangaID);
 
-    const query = {
+const query = {ID: mangaID}
+    const changedJSON = 
+        { $set:{
         ID: req.query.ID,
         NameFR: req.query.NameFR,
         NameJP: req.query.NameJP,
         Year: req.query.Year,
         Author: req.query.Author,
         Genres: req.query.Genres
-    }
+    }};
 console.log(
     "ID:", req.query.ID,
     "NameFR:", req.query.NameFR,
@@ -131,7 +136,7 @@ console.log(
             console.log("Connected correctly to server");
             dbLibrary = dbMongo.db("restExo");
             //UPDATING
-            dbLibrary.collection("MANGAS").updateOne(mangaID, query, function (err, res) {
+            dbLibrary.collection("MANGAS").updateOne(query, changedJSON, function (err, res) {
                 if (err) throw err;
                 
                 console.log("1 document updated");
