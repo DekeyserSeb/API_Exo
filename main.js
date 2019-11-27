@@ -1,94 +1,165 @@
 // INITIALIZATION
 
 const mongo = require('mongodb');
-const filestream = require('fs'); 
-const requestJSON = require ('request');
+const filestream = require('fs');
+const requestJSON = require('request');
 const body_parser = require('body-parser');
 const express = require('express');
 
 const server = express();
 const port = 4545;
 
+var manga;
+//Url de la base de données
+var url = 'mongodb://localhost:27017/';
+
 var MongoClient = require('mongodb').MongoClient;
 var dbLibrary
 
 server.use('/', express.static(__dirname));
 
-    // LANCEMENT DU SERVEUR
+// LANCEMENT DU SERVEUR
 
-    server.listen(port, () => console.log('Listening'));
+server.listen(port, () => console.log('Listening'));
 
-    // =======================
+// =======================
 
 // CONFIGURATION DES ROUTES (ALL REQUEST COME HERE)
 
-server.get('/h', function(req, res) {
+server.get('/h', function (req, res) {
     console.log('Connected')
     res.setHeader('Content-Type', 'text/html') //En-tête de la réponse en HTTP
     res.status(200).send('<h1>Message reçus avec succès</h1>')
     console.log(" req = / ")
-    });
+});
 
-server.get("/mangas/:ID", function(req, res) {
+server.get("/mangas", function (req, res) {
     console.log(" req = /get ")
-    const mangaID = req.params.ID;
-    const manga = data.find(_manga => _manga.ID === mangaID);
+    const mangaID = req.query.ID;
 
-    if (manga) {
-       res.json(manga);
-    } else {
-       res.json({ message: `item ${mangaID} doesn't exist`})
+    //Demander un manga a partir de son ID
+    var query = {
+        id: mangaID
     }
 
-    });
+    MongoClient.connect(url, {
+            useNewUrlParser: true
+        },
 
-server.post("/mangas", function(req, res) { //FAIRE LECTURE JSON
+        function (err, dbMongo) {
+
+            console.log("Connected correctly to server");
+            dbLibrary = dbMongo.db("restExo");
+            dbLibrary.collection("MANGAS").findOne((query), function (err, result) {
+                manga = result;
+            });
+
+            dbMongo.close();
+        })
+    if (manga) {
+        res.json(manga);
+    } else {
+        res.json({
+            message: `item ${mangaID} doesn't exist`
+        })
+    }
+
+});
+
+server.post("/mangas", function (req, res) {
     console.log(" req = /post ")
-    const manga = req.body;
-    console.log('Adding new item: ', manga);
- 
-    // add new item to array
-    data.push(manga)
- 
-    // return updated list
-    res.json(data);
 
-    });
+    const query = {
+        ID: req.query.ID,
+        NameFR: req.query.NameFR,
+        NameJP: req.query.NameJP,
+        Year: req.query.Year,
+        Author: req.query.Author,
+        Genres: req.query.Genres
+    }
 
-server.put("/mangas/:ID", function(req, res) {
+    console.log('Adding new item: ', );
+
+    MongoClient.connect(url, {
+            useNewUrlParser: true
+        },
+
+        function (err, dbMongo) {
+
+            console.log("Connected correctly to server");
+            dbLibrary = dbMongo.db("restExo");
+            dbLibrary.collection("MANGAS").insertOne(query, function (err, result) {
+                if (err == null) {
+                    console.log("ADDED");
+                } else {
+                    console.log("ERROR: " + err);
+                }
+            })
+            dbMongo.close();
+            res.json(query);
+        })
+});
+
+server.put("/mangas", function (req, res) {
     console.log(" req = /put ")
-    const mangaID = req.params.id;
-    const manga = req.body;
-    console.log("Editing item: ", mangaID, " to be ", manga);
- 
-    const updatedListItems = [];
-    // loop through list to find and replace one item
-    data.forEach(oldManga => {
-       if (oldManga.id === mangaID) {
-          updatedListItems.push(manga);
-       } else {
-          updatedListItems.push(oldManga);
-       }
-    });
- 
-    // replace old list with new one
-    data = updatedListItems;
- 
-    res.json(data);
-    });
+    const mangaID = req.query.ID;
+    console.log("Editing item: ", mangaID);
 
-server.delete('/mangas/:id', function(req, res) {
+    const query = {
+        ID: req.query.ID,
+        NameFR: req.query.NameFR,
+        NameJP: req.query.NameJP,
+        Year: req.query.Year,
+        Author: req.query.Author,
+        Genres: req.query.Genres
+    }
+console.log(
+    "ID:", req.query.ID,
+    "NameFR:", req.query.NameFR,
+    "NameJP:", req.query.NameJP,
+    "Year:", req.query.Year,
+    "Author:", req.query.Author,
+    "Genres:", req.query.Genres
+);
+
+    MongoClient.connect(url, {
+            useNewUrlParser: true
+        },
+
+        function (err, dbMongo) {
+
+            console.log("Connected correctly to server");
+            dbLibrary = dbMongo.db("restExo");
+            //UPDATING
+            dbLibrary.collection("MANGAS").updateOne(mangaID, query, function (err, res) {
+                if (err) throw err;
+                
+                console.log("1 document updated");
+            })
+            dbMongo.close();
+            res.json(query);
+        })
+});
+
+server.delete('/mangas', function (req, res) {
     console.log(" req = /delete ")
-    const mangaID = req.params.id;
+    const mangaID = req.query.id;
 
     console.log("Delete manga with id: ", mangaID);
- 
-    // filter list copy, by excluding item to delete
-    const filtered_list = data.filter(manga => manga.id !== mangaID);
- 
-    // replace old list with new one
-    data = filtered_list;
- 
-    res.json(data);
-    });
 
+    MongoClient.connect(url, {
+            useNewUrlParser: true
+        },
+
+        function (err, dbMongo) {
+
+            console.log("Connected correctly to server");
+            dbLibrary = dbMongo.db("restExo");
+            //REMOVING
+            dbLibrary.collection("MANGAS").deleteOne(mangaID, function (err, obj) {
+                if (err) throw err;
+                console.log("1 document deleted");
+            })
+            dbMongo.close();
+        })
+});
