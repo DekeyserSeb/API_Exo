@@ -1,4 +1,4 @@
-// INITIALIZATION
+// INITIALIZATION LE CLIENT C'EST POSTMAN
 
 const mongo = require('mongodb');
 const filestream = require('fs');
