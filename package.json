@@ -4,7 +4,7 @@
   "description": "API for manga",
   "main": "main.js",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "mongodb": "^3.3.4",
     "request": "^2.88.0"
   },
